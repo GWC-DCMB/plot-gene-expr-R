@@ -44,24 +44,23 @@ weight_lb
 weight_lb = weight_kg * 2.2
 weight_lb
 
-# READING DATA INTO R:
 
-# To import the file, first we need to tell our computer where the file is.
-# We do that by choosing a working directory, that is, a local directory on our
-# computer containing the files we need. This is very important in R. If we forget
-# this step we’ll get an error message saying that the file does not exist. We
-# can set the working directory using the function setwd.
-# TODO: talk about Rproject instead
+# TODO: talk about R projects. File > Open Project
 
 
 # Load tidyverse packages
+#install.packages(c('tidyverse', 'readxl'))
 library(tidyverse) # We need a package to read in an excel sheet. Go over packages
+library(readxl)
 
+# READING DATA INTO R
 # READ IN EXCEL FILES <- functions
-six_weeks = readxl::read_excel('data/log2_expression_6wks.xlsx', sheet = 1)
-twenty_four_weeks = readxl::read_excel('data/log2_expression_24wks.xlsx', sheet = 1)
+six_weeks = read_excel('data/log2_expression_6wks.xlsx', sheet = 1)
+twenty_four_weeks = read_excel('data/log2_expression_24wks.xlsx', sheet = 1)
 
 # LOOKING AT OUR DATA
+View(six_weeks)
+View(twenty_four_weeks)
 head(six_weeks)
 ncol(six_weeks)
 nrow(six_weeks)
@@ -95,11 +94,10 @@ dat_long_24wks <- twenty_four_weeks %>%
 # join
 dat_joined <- full_join(dat_long_6wks, dat_long_24wks, by = c('Sample_Num', 'gene'))
 
+# pivot longer again
 dat_joined_long <- dat_joined %>% pivot_longer(c('6', '24'),
                                                names_to = 'weeks',
                                                values_to = 'log2_expr')
-#PLOT
-# can reference by gene
 
 dat_joined_long %>%
     filter(gene == 'ACTN2') %>%
@@ -107,6 +105,7 @@ dat_joined_long %>%
     geom_boxplot() +
     labs(title = 'ACTN2')
 
+# TODO: interesting genes for hearts, cellular development, division?
 
 # CHALLENGE:
 # Make a boxplot plot for expression of the gene GATA4 at 6 weeks compared to 24 weeks.
@@ -114,16 +113,23 @@ dat_joined_long %>%
 
 
 # SAVING YOUR PLOT
-pdf('my_plot.pdf')
-#everything in between pdf() and dev.off() gets saved in the pdf
-my_plot
-dev.off()
+# TODO: ggsave
 
-# IF TIME: USING A PRE-MADE FUNCTION TO PLOT ALL THE GENES
-source('plot_all_genes.R') # use source to load in the function
-plot_all_genes(timepoint1 = six_weeks, timepoint2 = twenty_four_weeks, xlabels = c('6wk', '24wk'))
+# PLOT ALL THE GENES
+# facet wrap
+dat_joined_long %>%
+    ggplot(aes(weeks, log2_expr)) +
+    geom_boxplot() +
+    facet_wrap('gene')
 
-# SAVE ALL PLOTS TO A PDF
-pdf('all_plots.pdf')
-plot_all_genes(timepoint1 = six_weeks, timepoint2 = twenty_four_weeks, xlabels = c('6wk', '24wk'))
-dev.off()
+# heatmaps
+dat_joined_long %>%
+    filter(weeks == '6', !is.na(log2_expr)) %>%
+    ggplot(aes(gene, Sample_Num, fill = log2_expr)) +
+    geom_tile() +
+    theme(axis.text.x = element_text(angle = 90))
+dat_joined_long %>%
+    filter(weeks == '24', !is.na(log2_expr)) %>%
+    ggplot(aes(gene, Sample_Num, fill = log2_expr)) +
+    geom_tile() +
+    theme(axis.text.x = element_text(angle = 90))
