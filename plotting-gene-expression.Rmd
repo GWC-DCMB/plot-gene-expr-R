@@ -230,7 +230,9 @@ A warning tells us, "you might want to know about this issue, but R still did wh
 You need to fix any errors that arise in order for your code to work.
 Warnings, are probably best to resolve or at least understand why they are coming up.
 
-> ### How can you fix the error messages in these next lines of code?
+> ### Exercise: error messages
+>
+> How can you fix the error messages in these next lines of code?
 > 
 > ```{r, error = TRUE}
 > heihgt_cm
@@ -569,7 +571,10 @@ ggsave(filename = 'boxplot_actn2.png', plot = boxplot_actn2)
 ```
 
 
-> ### Exercise: Make a boxplot plot for expression of the gene GATA4 at 6 weeks compared to 24 weeks.
+> ### Exercise: make a boxplot
+>
+> Make a boxplot plot for expression of the gene GATA4 at 6 weeks compared to 24 weeks.
+>
 > ```{r gata4}
 > # CHALLENGE:
 > # Make a boxplot plot for expression of the gene GATA4 at 6 weeks compared to 24 weeks.
@@ -658,7 +663,10 @@ dat_joined_long %>%
     scale_color_manual(values = c('#B0C4DE', '#DDA0DD'))
     labs(title = 'ACTN2', x = '# of weeks', y = 'log2 gene expression')
 ```
-> ### Exercise: modify your boxplot for GATA4. Make each box a different color or fill (or both!)
+
+> ### Exercise: custom colors
+>
+> modify your boxplot for GATA4. Make each box a different color or fill (or both!)
 >
 > Once you've finished, use `ggsave()` to save the file. 
 > ```{r color-exercise}
