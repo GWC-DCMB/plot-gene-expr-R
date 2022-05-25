@@ -23,7 +23,9 @@ knitr::opts_chunk$set(echo = TRUE,
                       fig.path = 'figures/')
 ```
 
-# RStudio
+# Intro R
+
+## RStudio
 
 In this workshop, we will plot gene expression levels from an RNAseq dataset.
 To do this, we'll need two things: data and a platform to analyze the data.
@@ -104,7 +106,7 @@ With your cursor on the line with the `2+2`, click the button that says <kbd>Run
 
 As you write more code, you can highlight multiple lines and then click <kbd>Run</kbd> to run all of the lines you have selected.
 
-# R as a calculator
+## R as a calculator
 
 You can use R like a calculator to add (`+`), multiply (`*`), divide (`/`), and more!
 
@@ -331,10 +333,9 @@ Let's load our first package with `library(tidyverse)`.
 Go ahead and run that line in the **Console** by clicking the <kbd>Run</kbd> button on the top right of the **Editor** tab and choosing <kbd>Run Selected Lines</kbd>. This loads a set of useful functions and sample data that makes it easier for us to do complex analyses and create professional visualizations in R.
 
 ```{r loadTidyverse, message=TRUE}
+#install.packages('tidyverse')
 library(tidyverse)
 ```
-
-For more information on installation of the `tidyverse`, see the [setup instructions][lesson0].
 
 > #### What's with all those messages???
 >
@@ -365,13 +366,15 @@ For more information on installation of the `tidyverse`, see the [setup instruct
 > If you've used R before, you may have learned commands that are different than the ones we will be using during this workshop. We will be focusing on functions from the [tidyverse](https://www.tidyverse.org/). The "tidyverse" is a collection of R packages that have been designed to work well together and offer many convenient features that do not come with a fresh install of R (aka "base R"). These packages are very popular and have a lot of developer support including many staff members from RStudio. These functions generally help you to write code that is easier to read and maintain. We believe learning these tools will help you become more productive more quickly.
 
 
-# Loading data as data frames
+# Data frames
 
 The variable types we discussed above are useful for simple variables, but
 what if you want to store attributes about lots of different things, like patient samples? 
 For that we use data frames. Just about anything that you can store as rows and columns, 
 like in an Excel spreadsheet, are a great use for data frames. 
 Let's find out how to read in a dataset as a data frame.
+
+## load
 
 ```{r}
 # READING DATA INTO R
@@ -381,6 +384,7 @@ twenty_four_weeks <- read_csv('https://raw.githubusercontent.com/GWC-DCMB/plot-g
 
 `read_csv` gave us lots of useful information about the data frame we just loaded!
 
+## view
 
 If you want to take a peak at just the first 10 rows of the data frame, you can do so with
 `head`, or to peak at the last 10 rows using `tail()`,or look at the whole data frame interactively with `View`:
@@ -412,6 +416,7 @@ six_weeks[,2]
 six_weeks$ACTN2
 ```
 
+## explore
 
 ```{r}
 # USING FUNCTIONS
@@ -482,8 +487,9 @@ dat_joined_long <- dat_joined %>% pivot_longer(c('6', '24'),
 dat_joined_long
 ```
 
+# Data visualization
 
-# Your first boxplot
+## Your first boxplot
 
 Now we're ready to make our first plot!
 
@@ -586,7 +592,7 @@ ggsave(filename = 'boxplot_actn2.png', plot = boxplot_actn2)
 >     labs(title = 'GATA4', x = '# of weeks', y = 'log2 gene expression')
 > ```
 
-# Color palettes
+## Color palettes
 
 We can map the color of the boxplot to a variable using `aes(color = colname)`.
 Let's see what it looks like using the default options:
@@ -682,7 +688,7 @@ dat_joined_long %>%
 > ```
 
 
-# Plot all the genes
+## Plot all the genes
 
 ```{r boxplot-all-genes}
 # PLOT ALL THE GENES
@@ -693,7 +699,7 @@ dat_joined_long %>%
     facet_wrap('gene')
 ```
 
-# Heatmaps
+## Heatmaps
 
 ```{r heatmap-6-weeks}
 dat_joined_long %>%
@@ -712,7 +718,7 @@ dat_joined_long %>%
 ```
 
 <!--
-# Gene fun facts
+## Gene fun facts
 
 ```{r}
 gene_facts <- tibble(gene = c("ACTN2", "COL1A1", "COL1A2", "COL3A1", "COL5A1", 
@@ -721,7 +727,7 @@ gene_facts <- tibble(gene = c("ACTN2", "COL1A1", "COL1A2", "COL3A1", "COL5A1",
 ```
 -->
 
-# Bonus: Why log2-transform
+## Bonus: Why log2-transform
 
 ```{r log-trans}
 tibble(linear = 0:10,
