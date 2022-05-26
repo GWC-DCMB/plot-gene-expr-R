@@ -1,7 +1,7 @@
 ---
 title: "Plotting gene expression in R"
 author: |
-  | Kelly Sovacool and Audrey Drotos
+  | Kelly Sovacool, Audrey Drotos, and Stephanie Thiede
   | Adapted from [U of Michigan Carpentries](umcarpentries.org/intro-curriculum-r/)
 date: "version `r format(Sys.time(), '%B %d, %Y')`"
 output:
@@ -376,13 +376,21 @@ Let's find out how to read in a dataset as a data frame.
 
 ## load
 
+
 ```{r}
 # READING DATA INTO R
 six_weeks <- read_csv('https://raw.githubusercontent.com/GWC-DCMB/plot-gene-expr-R/main/data/log2_expression_6wks.csv')
 twenty_four_weeks <- read_csv('https://raw.githubusercontent.com/GWC-DCMB/plot-gene-expr-R/main/data/log2_expression_24wks.csv')
 ```
 
-`read_csv` gave us lots of useful information about the data frame we just loaded!
+`read_csv` gave us lots of useful information about the data frames we just loaded. Take a look at the column names and their types.
+
+
+> ##### The dataset is curated from this paper:
+>
+> Cui Y _et al._ 2019. Single-Cell Transcriptome Analysis Maps the Developmental Track of the Human Heart. 
+> Cell Reports 26:1934-1950.e5.
+> https://doi.org/10.1016/j.celrep.2019.01.079
 
 ## view
 
