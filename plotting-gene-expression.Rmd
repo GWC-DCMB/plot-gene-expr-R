@@ -67,13 +67,13 @@ At the top of your screen you'll see the "File" menu. Select that menu and then 
 
 <img src="https://github.com/GWC-DCMB/plot-gene-expr-R/blob/main/images/new_project_menu.png?raw=true" width="600"/>
 
-When the smaller window opens, select "Existing Directory" and then the "Browse" button in the next window.
+When the smaller window opens, select "New Directory" and then the "Browse" button in the next window.
 
 <img src="https://github.com/GWC-DCMB/plot-gene-expr-R/blob/main/images/existing_directory.png?raw=true" width="600"/>
 
 <img src="https://github.com/GWC-DCMB/plot-gene-expr-R/blob/main/images/browse.png?raw=true" width="600"/>
 
-Navigate to the directory that contains your code and data from the setup instructions and click the "Open" button.
+Creat a new project called "heart-gene-expr-2022" and click the "Open" button.
 
 <img src="https://github.com/GWC-DCMB/plot-gene-expr-R/blob/main/images/navigate_to_project.png?raw=true" width="600"/>
 
@@ -85,10 +85,10 @@ Did you notice anything change?
 
 In the lower right corner of your RStudio session, you should notice that your
 Files tab is now your project directory. You'll also see a file called
-un-report.Rproj in that directory.
+heart-gene-expr-2022.Rproj in that directory.
 
-From now on, you should start RStudio by double clicking on that file. This will
-make sure you are in the correct directory when you run your analysis.
+From now on, you should start RStudio by double clicking on that file. 
+This will make sure you are in the correct directory when you run your analysis.
 
 <img src="https://github.com/GWC-DCMB/plot-gene-expr-R/blob/main/images/files_with_rproj.png?raw=true" width="600"/>
 
