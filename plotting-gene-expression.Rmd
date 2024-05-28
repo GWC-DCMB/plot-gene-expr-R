@@ -1,7 +1,7 @@
 ---
 title: "Plotting gene expression in R"
 author: |
-  | Kelly Sovacool, Audrey Drotos, and Stephanie Thiede
+  | Kelly Sovacool, Audrey Drotos, Stephanie Thiede, and Breanna McBean
   | Adapted from [U of Michigan Carpentries](umcarpentries.org/intro-curriculum-r/)
 date: "version `r format(Sys.time(), '%B %d, %Y')`"
 output:
@@ -379,8 +379,7 @@ Let's find out how to read in a dataset as a data frame.
 
 ```{r}
 # READING DATA INTO R
-six_weeks <- read_csv('https://raw.githubusercontent.com/GWC-DCMB/plot-gene-expr-R/main/data/log2_expression_6wks.csv')
-twenty_four_weeks <- read_csv('https://raw.githubusercontent.com/GWC-DCMB/plot-gene-expr-R/main/data/log2_expression_24wks.csv')
+expression_data <- read_csv("https://tinyurl.com/UMGWCDFB")
 ```
 
 `read_csv` gave us lots of useful information about the data frames we just loaded. Take a look at the column names and their types.
@@ -394,105 +393,73 @@ twenty_four_weeks <- read_csv('https://raw.githubusercontent.com/GWC-DCMB/plot-g
 
 ## view
 
-If you want to take a peak at just the first 10 rows of the data frame, you can do so with
-`head`, or to peak at the last 10 rows using `tail()`,or look at the whole data frame interactively with `View`:
+If you want to take a peak at just the first 6 rows of the data frame, you can do so with
+`head`, or to peak at the last 6 rows using `tail()`,or look at the whole data frame interactively with `View`:
 
 ```{r, eval = FALSE}
 # LOOKING AT OUR DATA
-head(six_weeks)
-head(twenty_four_weeks)
-tail(six_weeks)
-tail(twenty_four_weeks)
-View(six_weeks)
-View(twenty_four_weeks)
+View(expression_data)
+head(expression_data)
+tail(expression_data)
 ```
+
+We can see that the data type of our weeks column is currently a double. We want to split this data to 
+look at what is going on at 6 weeks and 24 weeks separately, so we need to make this
+column into categories, or "factors". 
+
+```{r}
+expression_data$weeks <- factor(expression_data$weeks)
+```
+
+Now, we are going to use `filter()` to split the data into two separate data frames, 
+one for each time point. 
+
+```{r}
+six_weeks <- expression_data %>%
+    filter(weeks == 6)
+twenty_four_weeks <- expression_data %>%
+    filter(weeks == 24)
+```
+
+Now, let's more closely at the six week data:
 
 ```{r}
 ncol(six_weeks)
 nrow(six_weeks)
 dim(six_weeks)
 colnames(six_weeks)
-rownames(six_weeks)
+```
+As we see from above, there are 864 rows, so let's just look at `head()` of row 
+names to see the first few row names.
+
+```{r}
+head(rownames(six_weeks))
 
 #reference things in the data frame
 #data_frame[row,column]
 dim(six_weeks)
 six_weeks[1,1]
-six_weeks[5,]
-six_weeks[,5]
+six_weeks[4,]
+six_weeks[,4]
 six_weeks[,2]
-six_weeks$ACTN2
+```
+The method above automatically shows us the first 10 rows of our column of interest. 
+Let's compare this to another method of looking at a particular column, also focusing on the 
+first 10 rows using `head()` again.
+
+```{r}
+head(six_weeks$gene, 10)
 ```
 
 ## explore
 
 ```{r}
 # USING FUNCTIONS
-mean(six_weeks$ACTN2)
-mean(twenty_four_weeks$ACTN2)
+mean(six_weeks$log2_expr)
+mean(twenty_four_weeks$log2_expr)
 
-summary(six_weeks$ACTN2)
-summary(twenty_four_weeks$ACTN2)
-```
-
-# Data manipulation
-
-Data comes in many shapes and sizes, and one way we classify data is either "wide" or "long." Data that is "long" has one row per observation. These data are in a wide format. We have one row for each patient sample and each column is a different gene. 
-However, to make our data easier to work with, we'll want to convert it to a long format.
-Instead of having each gene be a different column, we'll create a new column for the gene names and a new column for the expression level. 
-The `tidyr` package contains the functions `pivot_wider` and `pivot_longer` that make it easy to switch between the two formats. The `tidyr` package is included in the `tidyverse` package so we don't need to do anything to load it.
-
-## pivot
-
-```{r}
-# pivot longer
-dat_long_6wks <- six_weeks %>%
-    pivot_longer(-Sample_Num, names_to = "gene", values_to = '6')
-dat_long_6wks
-dat_long_24wks <- twenty_four_weeks %>%
-    pivot_longer(-Sample_Num, names_to = "gene", values_to = '24')
-dat_long_24wks
-```
-
-## join
-
-Now that our two data frames are in a long format, we're ready to join them 
-together to make one bigger data frame.
-The dplyr package has a number of tools for joining data frames together depending on what we want to do with the rows of the data of countries that are not represented in both data frames. 
-
-`?join`
-
-We have a few options here:
-
-> The mutating joins add columns from y to x, matching rows based on the keys:
->  - inner_join(): includes all rows in x and y.
->  - left_join(): includes all rows in x.
->  - right_join(): includes all rows in y.
->  - full_join(): includes all rows in x or y.
-
-
-In an "inner join", the new data frame only has those rows where the same key is found in both data frames. 
-A "full join" uses all the rows in both data frames, even when the key is not found in both.
-
-<img src="https://github.com/BIGslu/2022_ASM_Microbe_RNAseq/blob/main/2_tidyverse/images/r-data-analysis/join-inner.png?raw=true" width="400"/>
-
-Let's use a full join on our dataset:
-
-```{r}
-# join
-dat_joined <- full_join(dat_long_6wks, dat_long_24wks, by = c('Sample_Num', 'gene'))
-dat_joined
-```
-
-This is looking pretty tidy. But still, it could be tidier! 
-Let's use pivot longer again so we'll have a column for the number of weeks.
-
-```{r}
-# pivot longer again
-dat_joined_long <- dat_joined %>% pivot_longer(c('6', '24'),
-                                               names_to = 'weeks',
-                                               values_to = 'log2_expr')
-dat_joined_long
+summary(six_weeks$log2_expr)
+summary(twenty_four_weeks$log2_expr)
 ```
 
 # Data visualization
@@ -504,7 +471,7 @@ Now we're ready to make our first plot!
 First, let's try just plotting the ACTN2 gene. We'll use `filter()` to get rows for this gene only:
 
 ```{r filter}
-dat_joined_long %>%
+expression_data %>%
     filter(gene == 'ACTN2')
 ```
 
@@ -515,7 +482,7 @@ reasons people like using R so much. All plots made using the `ggplot2` package
 start by calling the `ggplot()` function. 
 
 ```{r ggplot-blank}
-dat_joined_long %>%
+expression_data %>%
     filter(gene == 'ACTN2') %>%
     ggplot()
 ```
@@ -535,7 +502,7 @@ Remember, R is case-sensitive, so we have to be careful to match the column
 names exactly!
 
 ```{r ggplot-aes}
-dat_joined_long %>%
+expression_data %>%
     filter(gene == 'ACTN2') %>%
     ggplot() +
     aes(weeks, log2_expr)
@@ -554,7 +521,7 @@ histograms, etc). We tell our plot object what to draw by adding a "geometry"
 today, but for our first plot, let's draw our data using a boxplot.
 
 ```{r ggplot-boxplot}
-dat_joined_long %>%
+expression_data %>%
     filter(gene == 'ACTN2') %>%
     ggplot() +
     aes(weeks, log2_expr) +
@@ -564,7 +531,7 @@ dat_joined_long %>%
 Finally, we can make it look nicer by adding labels:
 
 ```{r boxplot-actn2}
-dat_joined_long %>%
+expression_data %>%
     filter(gene == 'ACTN2') %>%
     ggplot() +
     aes(weeks, log2_expr) +
@@ -575,7 +542,7 @@ dat_joined_long %>%
 ## Saving plots
 
 ```{r, eval = FALSE}
-boxplot_actn2 <- dat_joined_long %>%
+boxplot_actn2 <- expression_data %>%
     filter(gene == 'ACTN2') %>%
     ggplot() +
     aes(weeks, log2_expr) +
@@ -592,7 +559,7 @@ ggsave(filename = 'boxplot_actn2.png', plot = boxplot_actn2)
 > ```{r gata4}
 > # CHALLENGE:
 > # Make a boxplot plot for expression of the gene GATA4 at 6 weeks compared to 24 weeks.
-> dat_joined_long %>%
+> expression_data %>%
 >     filter(gene == 'GATA4') %>%
 >     ggplot() +
 >     aes(weeks, log2_expr) +
@@ -608,7 +575,7 @@ Let's see what it looks like using the default options:
 ```{r color}
 # R color palettes
 # change the colors with scale_color_
-dat_joined_long %>%
+expression_data %>%
     filter(gene == 'ACTN2') %>%
     ggplot() +
     aes(weeks, log2_expr, color = weeks) +
@@ -621,7 +588,7 @@ That changed the outline, but not the inside. We can instead use fill:
 ```{r fill}
 # R color palettes
 # change the colors with scale_color_
-dat_joined_long %>%
+expression_data %>%
     filter(gene == 'ACTN2') %>%
     ggplot() +
     aes(weeks, log2_expr, fill = weeks) +
@@ -636,7 +603,7 @@ manually set them and specify colors by name:
 ```{r scale-fill}
 # R color palettes
 # change the colors with scale_color_
-dat_joined_long %>%
+expression_data %>%
     filter(gene == 'ACTN2') %>%
     ggplot() +
     aes(weeks, log2_expr, fill = weeks) +
@@ -653,7 +620,7 @@ Let's use "plum" (#DDA0DD) and "light steel blue" (#B0C4DE).
 ```{r scale-fill-hex}
 # R color palettes
 # change the colors with scale_color_
-dat_joined_long %>%
+expression_data %>%
     filter(gene == 'ACTN2') %>%
     ggplot() +
     aes(weeks, log2_expr, fill = weeks) +
@@ -668,7 +635,7 @@ You can even specify both the fill and the color at the same time:
 ```{r scale-fill-color}
 # R color palettes
 # change the colors with scale_color_
-dat_joined_long %>%
+expression_data %>%
     filter(gene == 'ACTN2') %>%
     ggplot() +
     aes(weeks, log2_expr, fill = weeks, color = weeks) +
@@ -684,7 +651,7 @@ dat_joined_long %>%
 >
 > Once you've finished, use `ggsave()` to save the file. 
 > ```{r color-exercise}
-> pretty_boxplot_gata4 = dat_joined_long %>%
+> pretty_boxplot_gata4 = expression_data %>%
 >     filter(gene == 'GATA4') %>%
 >     ggplot() +
 >     aes(weeks, log2_expr, fill = weeks, color = weeks) +
@@ -701,7 +668,7 @@ dat_joined_long %>%
 ```{r boxplot-all-genes}
 # PLOT ALL THE GENES
 # facet wrap
-dat_joined_long %>%
+expression_data %>%
     ggplot(aes(weeks, log2_expr)) +
     geom_boxplot() +
     facet_wrap('gene')
@@ -710,7 +677,7 @@ dat_joined_long %>%
 ## Heatmaps
 
 ```{r heatmap-6-weeks}
-dat_joined_long %>%
+expression_data %>%
     filter(weeks == '6', !is.na(log2_expr)) %>%
     ggplot(aes(gene, Sample_Num, fill = log2_expr)) +
     geom_tile() +
@@ -718,7 +685,7 @@ dat_joined_long %>%
 ```
 
 ```{r heatmap-24-weeks}
-dat_joined_long %>%
+expression_data %>%
     filter(weeks == '24', !is.na(log2_expr)) %>%
     ggplot(aes(gene, Sample_Num, fill = log2_expr)) +
     geom_tile() +
